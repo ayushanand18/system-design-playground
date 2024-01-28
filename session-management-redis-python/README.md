@@ -15,5 +15,8 @@ Now, what will happen if the `session_id` of a particular `user_id` is expired?
 
 There is another thing that we should keep in mind, that `user_id` also have a TTL polic with them. This will be 1.5x of the `session_id` TTL, so that a user can refresh sessions easily while maintaining that the cluster is not overloadedwith stale `user_id` records.
 
+## Run
++ Install and run on ubuntu, and run `redis-server`
+
 ## References
 + https://redis.com/solutions/use-cases/session-management/
