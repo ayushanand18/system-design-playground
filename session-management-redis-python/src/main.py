@@ -1,7 +1,7 @@
 from datetime import datetime
 from fastapi import FastAPI, HTTPException
 
-from .utils import generate_uuid, CreateSession
+from .utils import generate_uuid
 from .redis_utils import get_user_session, write_session, write_user_session, drop_session, create_user, get_session_by_id
 
 app = FastAPI()
