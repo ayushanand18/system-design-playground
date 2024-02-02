@@ -9,13 +9,13 @@
 ### API Design
 The overall design of the API looks very simple, with the following routes:
 * `GET` `/api/locations/search/:longitude/:latitude/:distance` - Return nearest locations around [longitude, latitude] within distance. Returns a tuple of `location_id`s
-* `POST` `/api/locations/create` - Create a new location at specified point. Returns a location_id
-    - ```json
-        {
-            longitude: double,
-            latitude: double,
-            data: json
-        }
+* `POST` `/api/locations/create` - Create a new location at specified point. Returns a `location_id`.
+    ```json
+    {
+        longitude: double,
+        latitude: double,
+        data: json
+    }
     ```
 * `GET` `/api/location/:id` - Get information about a specific `location_id` (:id)
 
