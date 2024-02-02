@@ -12,9 +12,9 @@ The overall design of the API looks very simple, with the following routes:
 * `POST` `/api/locations/create` - Create a new location at specified point. Returns a `location_id`.
     ```json
     {
-        longitude: double,
-        latitude: double,
-        data: json
+        "longitude": "double",
+        "latitude": "double",
+        "data": "json_string"
     }
     ```
 * `GET` `/api/location/:id` - Get information about a specific `location_id` (:id)
