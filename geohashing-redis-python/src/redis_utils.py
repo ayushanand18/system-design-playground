@@ -14,6 +14,7 @@ Redis = aioredis.from_url(REDIS_URL)
 async def get_location_from_redis(location_id):
     """Fetch Metadata from location_id"""
     try:
+        print(f"data:{location_id}")
         location_data = await Redis.get(f"data:{location_id}")
         return location_data.decode()
     except:
@@ -23,7 +24,7 @@ async def set_location_to_redis(location_id, location_data, location_hash):
     """Set a location into Redis"""
     try:
         # first set for hashed index
-        await Redis.set(f"location:{location_hash}:{location_id}", {location_hash})
+        await Redis.set(f"location:{location_hash}:{location_id}", location_id)
         # now also set location data
         await Redis.set(f"data:{location_id}", location_data)
     except:
@@ -32,11 +33,10 @@ async def set_location_to_redis(location_id, location_data, location_hash):
 async def find_keys_with_prefix(prefix):
     keys = []
     cursor = b'0'
-    prefix = "prefix"
 
     while cursor:
         cursor, partial_keys = await Redis.scan(cursor, match=f"location:{prefix}*", count=100)
-        keys_str = [key.decode('utf-8').split(':')[1] for key in partial_keys]
+        keys_str = [key.decode('utf-8').split(':')[2] for key in partial_keys]
         keys.extend(keys_str)
 
-    print("Keys with the specified prefix:", keys)
+    return keys

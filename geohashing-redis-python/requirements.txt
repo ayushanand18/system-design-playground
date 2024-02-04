@@ -2,3 +2,4 @@ fastapi
 uvicorn[standard]
 aioredis
 py-dotenv
+pygeohash
