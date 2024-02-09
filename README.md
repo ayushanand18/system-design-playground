@@ -5,6 +5,7 @@ A very basic system design playground with use cases and detailed explanations o
 ## Systems Implemented
 + [Session Management with Redis - Python](/session-management-redis-python/README.md)
 + [Location Proximity Service with Redis - Python](/geohashing-redis-python/README.md)
++ [Distributed Message Queue with Kafka - Python](/distributed-message-queue-kafka-python/)
 
 # Notes
 * All the notes for each technology can be found in the respective files.
