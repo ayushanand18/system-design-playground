@@ -12,15 +12,15 @@
 * Now, there must also be consumers of the Message Queue, so a naive idea is that a service must signal a `poll` to fetch next batch of messages, for simplicity without lossofgeneralisation we will take this number as 1, each consumer must request messages one at a time. To implement this, we can have a REST endpoint (although RPC is recommended but since we want to focus only on the Queue, we'd query the message using a `GET` request on browser via an endpoint).
 
 ## API Design
-* `POST /message/create` - create a new message onto the queue. returns a `UUID` of the message written. payload:
+* `POST /message/create` - create a new message(s) onto the queue. returns a `UUID(s)` of the message(s) written. payload:
     ```json
-    {
+    [{
         "timestamp": "Date", // timestamp of creation of message on client
         "title": "String", // title of the message
         "body": "String", // body or data associated with the message could be a JSON String
         "author": "UUID", // the application/service ID of the origin of message
         "topic": "String" // category of the message useful for sharding/polling
-    }
+    }]
     ```
 * `GET /message/poll` - poll the next available request from the Queue. returns a message object.
 
