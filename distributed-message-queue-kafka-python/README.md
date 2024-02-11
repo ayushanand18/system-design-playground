@@ -25,6 +25,6 @@
 * `GET /message/poll` - poll the next available request from the Queue. returns a message object.
 
 ### Run
-Instructions to run a Kafka server on `docker` are discussed in `Install-Kafka.md` file. The API is a asimple FastAPI server with no custom configurations. Use an ASGI to run it.
+Instructions to run a Kafka server on `docker` are discussed in `Install-Kafka.md` file. The API is a simple FastAPI server with no custom configurations. Use an ASGI to run it.
 
 ## References
