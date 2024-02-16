@@ -16,11 +16,11 @@ logging.basicConfig(level=logging.DEBUG,  # Set the logging level to DEBUG
 app = FastAPI()
 
 @app.post("/message/create")
-async def create_message(message_items: MessageItems) -> dict:
+async def create_message(message_items: MessageItems):
     """Create a new message into Kafka"""
     try:
-        for message in message_items:
-            await kafka_create_message(message)
+        data = await kafka_create_message(message_items)
+        return {"status":"success", "data": data}
     except BaseException as error:
         logging.error(f"Error: {str(error)}")
 

@@ -2,62 +2,50 @@
 Kafka Utility Functions
 """
 
-from confluent_kafka import Producer, Consumer
+from fastapi import HTTPException
+from kafka import KafkaAdminClient, KafkaProducer, KafkaConsumer
 from datetime import datetime
-import socket
+import sys
+import os
+from dotenv import load_dotenv
+from typing import Optional
 
-from .utils import MessageItem, generate_uuid
+from .utils import MessageItem, generate_uuid, MessageItems
 
-prod_conf = {'bootstrap.servers': 'host1:9092,host2:9092',
-        'client.id': socket.gethostname()}
-cons_conf = {'bootstrap.servers': 'host1:9092,host2:9092',
-        'group.id': 'foo',
-        'auto.offset.reset': 'smallest'}
+load_dotenv()
 
-consumer = Consumer(cons_conf)
-producer = Producer(prod_conf)
+KAFKA_ADDR = os.getenv("KAFKA_ADDR")
+KAFKA_GRP = os.getenv("KAFKA_GRP")
+
+producer = KafkaProducer(bootstrap_servers=KAFKA_ADDR)
 
 async def kafka_create_message(message: MessageItems):
     """Create a Kafka Message on the topic"""
     id = generate_uuid()
     item = {
         'timestamp': message.timestamp,
-        'title': message.item,
+        'title': message.title,
         'body': message.body,
         'author': message.author,
-        'created_at': datetime.now(),
+        'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         'id': id,
     }
     try:
-        producer.produce(message.topic, key=id, value=item)
-    except BaseException as error:
-        raise HTTPException(status_code=404, detail=str(error))
+        producer.send(message.topic, key=id.encode(), value=str(item).encode())
+    except Exception as error:
+        raise HTTPException(status_code=500, detail=str(error))
     
-    return id
+    return {"id": id}
 
-async def kafka_poll_message(topic: str) -> MessageItem:
+async def kafka_poll_message(topic: str) -> Optional[MessageItem]:
     """Poll the next message from the queue on the topic"""
-    return await consume_loop(topic)
-
-def consume_loop(topics):
+    consumer = KafkaConsumer(topic, bootstrap_servers=KAFKA_ADDR, group_id=KAFKA_GRP)
     try:
-        consumer.subscribe(topics)
-        msg_count = 0
-        while running:
-            msg = consumer.poll(timeout=1.0)
-            if msg is None: continue
+        message = next(consumer)
+    except StopIteration:
+        raise HTTPException(status_code=404, detail="No messages available in the topic")
+    
+    message_value = message.value.decode('utf-8')
+    message_data = eval(message_value)  # This is a simple way to convert string dictionary to dictionary. Ensure data integrity in production.
 
-            if msg.error():
-                if msg.error().code() == KafkaError._PARTITION_EOF:
-                    # End of partition event
-                    sys.stderr.write('%% %s [%d] reached end at offset %d\n' %
-                                     (msg.topic(), msg.partition(), msg.offset()))
-                elif msg.error():
-                    raise KafkaException(msg.error())
-            else:
-                msg_count += 1
-                if msg_count % MIN_COMMIT_COUNT == 0:
-                    consumer.commit(asynchronous=True)
-                yield msg
-    finally:
-        consumer.close()
+    return MessageItem(**message_data)

@@ -11,7 +11,7 @@ class MessageItem(BaseModel):
     body: str
 
 class MessageItems(BaseModel):
-    timestamp: int
+    timestamp: float
     topic: str
     author: str
     title: str
