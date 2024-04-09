@@ -2,3 +2,5 @@ fastapi
 uvicorn[standard]
 py-dotenv
 kafka-python
+aiokafka
+sse_starlette

@@ -3,13 +3,13 @@ Kafka Utility Functions
 """
 
 from fastapi import HTTPException
-from kafka import KafkaAdminClient, KafkaProducer, KafkaConsumer
+from kafka import KafkaProducer
 from aiokafka import AIOKafkaConsumer
 from datetime import datetime
-import sys
+import ast
 import os
 from dotenv import load_dotenv
-from typing import Optional
+from typing import AsyncGenerator, Optional
 
 from .utils import MessageItem, generate_uuid, MessageItems
 
@@ -40,22 +40,22 @@ async def kafka_create_message(message: MessageItems):
     
     return {"id": id}
 
-async def kafka_poll_message(topic: str) -> Optional[MessageItem]:
+async def kafka_poll_message(topic: str) -> AsyncGenerator[any, any]:
     """Poll the next message from the queue on the topic"""
-    return MessageItem(await consume_kafka(topic))
+    async for message in consume_kafka(topic):
+        yield message
 
 async def consume_kafka(topic):
     consumer = AIOKafkaConsumer(
         topic,
         bootstrap_servers=KAFKA_ADDR,
         group_id=KAFKA_GRP,
-        auto_offset_reset='latest',  # Set to 'latest' to read only latest messages
+        auto_offset_reset='latest',
         enable_auto_commit=False
     )
 
     await consumer.start()
 
-    
     async for msg in consumer:
         yield msg.value.decode('utf-8')
     

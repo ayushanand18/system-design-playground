@@ -3,6 +3,8 @@ Distributed Message Queue using Kafka
 """
 
 from fastapi import FastAPI
+from sse_starlette import EventSourceResponse
+from starlette.responses import Response
 from .utils import MessageItem, MessageItems
 from .kafka_utils import kafka_create_message, kafka_poll_message
 import logging
@@ -25,9 +27,16 @@ async def create_message(message_items: MessageItems):
         logging.error(f"Error: {str(error)}")
 
 @app.get("/message/poll/{topic}")
-async def poll_message(topic: str) -> MessageItem:
+async def poll_message(topic: str) -> Response:
     """Poll a new message from the distributed queue for the topic"""
-    try:
-        return await kafka_poll_message(topic)
-    except BaseException as error:
-        logging.error(f"Error: {str(error)}")
+    async def generate():
+        try:
+            async for message in kafka_poll_message(topic):
+                print(f"{{\"data\": \"{message}\"}}")
+                yield f"{{\"data\": \"{message}\"}}"
+                
+        except Exception as error:
+            logging.error(f"Error: {str(error)}")
+            yield f"{{\"data\": \"Error: {error}\"}}"
+    
+    return EventSourceResponse(generate())
