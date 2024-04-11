@@ -17,5 +17,3 @@ I am running an Ubuntu VM, so I'll pick up instructions for Linux to Install Red
     ```
 + Now go over to the 8001 port for the RedisInsight, and you will be able to a dashboard to manage Redis, store keys, see server load and many other actions.
 + You can create new key-value data in Redis either using GUI on Redis Insight or using CLI or Redis Clients for Python/GO/others.
-
-
